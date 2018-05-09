@@ -17,7 +17,10 @@ SRCS_SHARED	= ./srcs/shared/basics.c	\
 
 SRCS_CLIENT	= ./srcs/client/client.c
 
-SRCS_SERVER	= ./srcs/server/server.c
+SRCS_SERVER	= ./srcs/server/server.c	\
+		  ./srcs/server/commands.c	\
+		  ./srcs/server/fd.c		\
+		  ./srcs/server/add_fd.c
 
 OBJS_SHARED	= $(SRCS_SHARED:.c=.o)
 OBJS_CLIENT	= $(SRCS_CLIENT:.c=.o)

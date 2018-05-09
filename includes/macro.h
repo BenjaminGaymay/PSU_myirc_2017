@@ -16,4 +16,6 @@
 #define QUIET 0
 #define VERBOSE 1
 
+#define NONE 0
+
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)

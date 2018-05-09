@@ -1,1 +1,2 @@
 trier les includes de basics.h
+voir si on remplace t_env par une liste chainée (on est limité a 254 users/chan la)

@@ -53,7 +53,9 @@ int create_socket(const int port, const in_addr_t addr,
 	pe = getprotobyname("TCP");
 	if (! pe)
 		return (FCT_FAIL("getprotobyname"), FD_ERROR);
-	fd = socket(AF_INET, SOCK_STREAM, pe->p_proto);
+	fd = socket(PF_INET, SOCK_STREAM, pe->p_proto);
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+		return (FCT_FAIL("setsockopt"), FD_ERROR);
 	if (fd == -1)
 		return (FCT_FAIL("socket"), FD_ERROR);
 	s_in.sin_family = AF_INET;

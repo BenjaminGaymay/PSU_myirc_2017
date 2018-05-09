@@ -8,16 +8,41 @@
 #include "server.h"
 #include "macro.h"
 
+
+/*
+** Recherche de l'ID du channel
+** Création du channel s'il n'existe pas
+*/
+int find_channel(t_env *e, int fd, const char *chan_name)
+{
+	for (int i = 1 ; i < MAX_FD + 1 ; i++)
+		if (e->channels[i].name &&
+		strcmp(chan_name, e->channels[i].name) == 0)
+			return (i);
+	for (int i = 1 ; i < MAX_FD + 1; i++)
+		if (!e->channels[i].name) {
+			e->channels[i].chanop = fd;
+			e->channels[i].name = strdup(chan_name);
+			return (i);
+		}
+	return (FD_ERROR);
+}
+
 void join(t_env *e, int fd, char *cmd)
 {
+	int channel_id;
+	char *msg;
+
 	if (!e->users[fd].name)
 		return;
-
-	//assossier channel name avec channel id
-	// verifier si le chan existe deja (si non user OP)
-	printf("%s join channel %s\n", e->users[fd].name, &cmd[5]);
-	e->users[fd].channel_id = 1;
-	e->users[fd].channel_name = strdup(&cmd[5]);
+	channel_id = find_channel(e, fd, &cmd[5]);
+	if (channel_id == FD_ERROR)
+		return;
+	asprintf(&msg, "* %s has joined", e->users[fd].name);
+	server_message(e, channel_id, msg);
+	free(msg);
+	e->users[fd].channel_id = channel_id;
+	e->users[fd].channel_name = e->channels[channel_id].name;
 }
 
 void nick(t_env *e, int fd, char *cmd)
@@ -27,9 +52,8 @@ void nick(t_env *e, int fd, char *cmd)
 
 }
 
-void user(t_env *e, int fd, char *cmd)
+void user()
 {
-	dprintf(fd, "\n");
 }
 
 static t_ptr_fct *get_cmd_ptr(void)
@@ -43,6 +67,16 @@ static t_ptr_fct *get_cmd_ptr(void)
 	return (commands);
 }
 
+void server_message(t_env *e, int channel_id, const char *msg)
+{
+	for (int i = 0 ; i < MAX_FD ; i++) {
+		if (channel_id == e->users[i].channel_id &&
+				e->fd_type[i] == FD_CLIENT) {
+			dprintf(i, "%s\n", msg);
+		}
+	}
+}
+
 static void send_message(t_env *e, int fd, const char *msg)
 {
 	if (e->users[fd].channel_id == NONE) {
@@ -52,8 +86,10 @@ static void send_message(t_env *e, int fd, const char *msg)
 	for (int i = 0 ; i < MAX_FD ; i++) {
 		if (e->users[fd].channel_id == e->users[i].channel_id &&
 				i != fd && e->fd_type[i] == FD_CLIENT) {
-			dprintf(i, "%s\n", msg);
-			printf("sending message\n");
+			if (e->channels[e->users[fd].channel_id].chanop == fd)
+				dprintf(i, "@%s: %s\n", e->users[fd].name, msg);
+			else
+				dprintf(i, "%s: %s\n", e->users[fd].name, msg);
 		}
 	}
 }

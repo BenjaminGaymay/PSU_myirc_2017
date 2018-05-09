@@ -22,7 +22,8 @@ static void init_server(t_env *e, int port)
 	static fd_set fd_read;
 
 	memset(e->fd_type, FD_FREE, MAX_FD);
-	memset(e->users, 0, MAX_FD);
+	memset(e->users, 0, sizeof(e->users));
+	memset(e->channels, 0, sizeof(e->channels));
 	e->port = port;
 	e->fd_read = &fd_read;
 	add_server(e);

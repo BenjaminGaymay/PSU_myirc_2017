@@ -22,12 +22,12 @@ void client_read(t_env *e, int fd)
 		buffer[size] = '\0';
 		tmp = strtok(buffer, "\n");
 		while (tmp) {
-			printf("%d: %s\n", fd, tmp);
 			exec_client_command(e, fd, tmp);
 			tmp = strtok(NULL, "\n");
 		}
 	} else {
-		printf("%d: Connection closed\n", fd);
+		//faire commande quit (avec message toussa toussa)
+		//verifier si dernier user du chan -> si oui on reset tout)
 		close(fd);
 		e->fd_type[fd] = FD_FREE;
 	}
@@ -38,7 +38,6 @@ void client_read(t_env *e, int fd)
 */
 void server_read(t_env *e, int fd)
 {
-	printf("New client\n");
 	add_client(e, fd);
 }
 

@@ -23,6 +23,12 @@ typedef struct s_client {
 	int channel_id;
 } t_client;
 
+typedef struct s_channel {
+	char *name;
+	int nb_users;
+	int chanop;
+} t_channel;
+
 typedef struct s_ptr_fct {
 	char *name;
 	fct cmd;
@@ -34,6 +40,7 @@ typedef struct s_env
 	fct fct_read[MAX_FD];
 	fct fct_write[MAX_FD];
 	t_client users[MAX_FD];
+	t_channel channels[MAX_FD];
 	fd_set *fd_read;
 	int port;
 } t_env;
@@ -45,4 +52,5 @@ void read_fd(t_env *);
 void server_read(t_env *, int);
 void client_read(t_env *, int);
 
+void server_message(t_env *, int, const char *);
 void exec_client_command(t_env *, int, char *);

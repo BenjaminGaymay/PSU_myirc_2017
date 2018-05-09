@@ -29,6 +29,9 @@ void client_read(t_env *e, int fd)
 		//faire commande quit (avec message toussa toussa)
 		//verifier si dernier user du chan -> si oui on reset tout)
 		close(fd);
+		free(e->users[fd].name);
+		e->channels[e->users[fd].channel_id].nb_users -= 1;
+		e->users[fd].name = 0;
 		e->fd_type[fd] = FD_FREE;
 	}
 }

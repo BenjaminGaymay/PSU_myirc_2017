@@ -19,7 +19,6 @@ typedef void(*fct)();
 
 typedef struct s_client {
 	char *name;
-	char *channel_name;
 	int channel_id;
 } t_client;
 

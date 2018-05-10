@@ -8,34 +8,50 @@
 #include "server.h"
 #include "macro.h"
 
+static void set_fd(t_env *e)
+{
+	t_client *tmp = e->clients;
+
+	FD_ZERO(e->fd_read);
+	FD_SET(e->server, e->fd_read);
+	while (tmp) {
+		FD_SET(tmp->fd, e->fd_read);
+		tmp = tmp->next;
+	}
+}
+
+
 static int server_loop(t_env *e)
 {
 	while (1) {
-		FD_ZERO(e->fd_read);
-		read_fd(e);
+		set_fd(e);
+		if (read_all_fd(e) == ERROR)
+			return (ERROR);
 	}
 	return (SUCCESS);
 }
 
-static void init_server(t_env *e, int port)
+static int init_server(t_env *e, const char *argv[])
 {
-	static fd_set fd_read;
-
-	memset(e->fd_type, FD_FREE, MAX_FD);
-	memset(e->users, 0, sizeof(e->users));
-	memset(e->channels, 0, sizeof(e->channels));
-	e->port = port;
-	e->fd_read = &fd_read;
-	add_server(e);
+	// verifier argv1
+	e->port = atoi(argv[1]);
+	e->server = create_socket(e->port, INADDR_ANY, SERVER, VERBOSE);
+	if (e->server == FD_ERROR)
+		return (FD_ERROR);
+	e->fd_max = e->server;
+	return (SUCCESS);
 }
 
 int main(const int argc, const char *argv[])
 {
-	t_env e;
+	fd_set fd_read;
+	t_env e = {NULL, NULL, &fd_read, 0, -1, -1};
 
 	if (argc != 2)
 		return (ERROR);
-	init_server(&e, atoi(argv[1]));
+	if (init_server(&e, argv) == FD_ERROR)
+		return (ERROR);
 	server_loop(&e);
+	//supprimer t_env e
 	return (0);
 }

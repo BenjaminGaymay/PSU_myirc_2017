@@ -21,6 +21,13 @@
 #include <ctype.h>
 #include <time.h>
 
+typedef int(*fct)();
+
+typedef struct s_ptr_fct {
+	char *name;
+	fct cmd;
+} t_ptr_fct;
+
 char *replace_char(char *, const char, const char);
 int read_file(const char *, const int);
 int create_file(const char *, const int);

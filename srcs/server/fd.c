@@ -68,7 +68,7 @@ int add_client(t_env *e)
 */
 int read_all_fd(t_env *e)
 {
-	static struct timeval tv = {20, 0};
+	struct timeval tv = {1, 0};
 	t_client *tmp;
 
 	if (select(e->fd_max + 1, e->fd_read, NULL, NULL, &tv) == -1)

@@ -95,7 +95,7 @@ void read_fd(t_env *e)
 		receive_message(e);
 }
 
-void client_loop()
+void client_loop(void)
 {
 	fd_set fd_read;
 	t_env e = {&fd_read, NULL, 6697, FD_ERROR};

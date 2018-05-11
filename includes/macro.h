@@ -17,5 +17,6 @@
 #define VERBOSE 1
 
 #define NONE -1
+#define DELETE 2
 
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)

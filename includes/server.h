@@ -32,7 +32,6 @@ typedef struct s_env
 	t_client *clients;
 	t_channel *channels;
 	fd_set *fd_read;
-	int fd_max;
 	int server;
 	int port;
 } t_env;
@@ -45,6 +44,7 @@ void server_read(t_env *, int);
 void client_read(t_env *, int);
 
 void server_message(t_env *, int, const char *);
-void exec_client_command(t_env *, t_client *, char *);
+int exec_client_command(t_env *, t_client *, char *);
 
-void delete_client(t_env *, t_client *);
+int delete_client(t_env *, t_client *);
+void delete_channel(t_env *, t_channel *);

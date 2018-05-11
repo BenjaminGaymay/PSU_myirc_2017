@@ -55,9 +55,11 @@ int join(t_env *e, t_client *client, char *cmd)
 	t_channel *channel;
 	char *msg;
 
-	// Verifier si on est le last du chan (si oui le delete)
-	if (client->channel)
+	if (client->channel) {
 		client->channel->nb_users -= 1;
+		if (client->channel->nb_users == 0)
+			delete_channel(e, client->channel);
+	}
 	channel = (find_channel(e, &cmd[5]) ? find_channel(e, &cmd[5]) : create_channel(e, client, &cmd[5]));
 	if (!channel)
 		return (FAILURE);
@@ -258,7 +260,7 @@ static int send_message(t_env *e, t_client *client, const char *msg)
 	return (SUCCESS);
 }
 
-void exec_client_command(t_env *e, t_client *client, char *cmd)
+int exec_client_command(t_env *e, t_client *client, char *cmd)
 {
 	t_ptr_fct *commands = get_cmd_ptr();
 	t_ptr_fct tmp;
@@ -267,10 +269,10 @@ void exec_client_command(t_env *e, t_client *client, char *cmd)
 	// la si tu fais un /listqsdqsd au lieu de /list ca marche =)))
 	for (int i = 0 ; i < 8 ; i++) {
 		tmp = commands[i];
-		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS) {
-			tmp.cmd(e, client, cmd);
-			return;
-		}
+		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
+		//faire commande quit (avec message toussa toussa)
+			return (tmp.cmd(e, client, cmd));
 	}
 	send_message(e, client, cmd);
+	return (SUCCESS);
 }

@@ -23,14 +23,15 @@ void delete_channel(t_env *e, t_channel *channel)
 	}
 	free(channel->name);
 	free(channel->chanop);
+	free(channel);
 }
 
-void delete_client(t_env *e, t_client *client)
+int delete_client(t_env *e, t_client *client)
 {
 	t_client *tmp = e->clients;
 
 	if (!tmp || !client)
-		return;
+		return (FAILURE);
 	close(client->fd);
 	free(client->name);
 	if (client->id == tmp->id)
@@ -45,4 +46,6 @@ void delete_client(t_env *e, t_client *client)
 		if (client->channel->nb_users == 0)
 			delete_channel(e, client->channel);
 	}
+	free(client);
+	return (DELETE);
 }

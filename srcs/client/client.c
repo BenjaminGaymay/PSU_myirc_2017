@@ -81,9 +81,11 @@ void receive_message(t_env *e)
 
 void read_fd(t_env *e)
 {
-	static struct timeval tv = {20, 0};
+	static struct timeval tv;
 	int fd_max = (e->fd != FD_ERROR ? e->fd : 0);
 
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
 	FD_SET(0, e->fd_read);
 	if (e->fd != FD_ERROR)
 		FD_SET(e->fd, e->fd_read);

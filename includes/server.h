@@ -19,6 +19,7 @@ typedef struct s_channel {
 } t_channel;
 
 typedef struct s_client {
+	int id;
 	char *name;
 	int fd;
 	t_channel *channel;
@@ -45,3 +46,5 @@ void client_read(t_env *, int);
 
 void server_message(t_env *, int, const char *);
 void exec_client_command(t_env *, t_client *, char *);
+
+void delete_client(t_env *, t_client *);

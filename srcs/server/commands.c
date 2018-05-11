@@ -146,9 +146,9 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 
 	if (strcmp(chan->name, &cmd[5]) != 0)
 		return (dprintf(client->fd, "You are not connected on this channel\n"), FAILURE);
-	// verifier si c'est le dernier user du chan
-	// si oui rm toussa toussa
 	client->channel->nb_users -= 1;
+	if (client->channel->nb_users == 0)
+			delete_channel(e, client->channel);
 	if (is_chanop(chan, client) == SUCCESS)
 		asprintf(&msg, "* @%s has disconnected", client->name);
 	else

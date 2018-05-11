@@ -27,15 +27,9 @@ void read_on_client(t_env *e, t_client *client)
 		}
 	}
 	 else
-		close(client->fd);
-	// delete le client
+		delete_client(e, client);
 
 	//faire commande quit (avec message toussa toussa)
-	//verifier si dernier user du chan -> si oui on reset tout)
-	// free(e->users[fd].name);
-	// e->channels[e->users[fd].channel_id].nb_users -= 1;
-	// e->users[fd].name = 0;
-	// e->fd_type[fd] = FD_FREE;
 }
 
 /*
@@ -51,7 +45,8 @@ int add_client(t_env *e)
 	if (!new)
 		return (FCT_FAIL("malloc"), ERROR);
 	client_sin_len = sizeof(client_sin);
-	asprintf(&(new->name), "anonymous%d", id++);
+	asprintf(&(new->name), "anonymous%d", id);
+	new->id = id++;
 	new->fd = accept(e->server, (struct sockaddr *)&client_sin, &client_sin_len);
 	new->channel_id = NONE;
 	new->next = e->clients;

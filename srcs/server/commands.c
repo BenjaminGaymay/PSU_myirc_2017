@@ -85,7 +85,7 @@ int  nick(t_env *e, t_client *client, char *cmd)
 
 	while (tmp) {
 		if (strcmp(tmp->name, &cmd[5]) == 0 && tmp->fd != client->fd)
-			return (dprintf(client->fd, "Nickname '%s' already used\n", &cmd[5]), FAILURE);
+			return (dprintf(client->fd, "Nickname '%s' already used\r\n", &cmd[5]), FAILURE);
 		tmp = tmp->next;
 	}
 	if (client->channel) {
@@ -117,9 +117,9 @@ int show_users(t_env *e, t_client *client)
 {
 	t_client *tmp = e->clients;
 
-	dprintf(client->fd, " > Connected users:\n");
+	dprintf(client->fd, " > Connected users:\r\n");
 	while (tmp) {
-		dprintf(client->fd, "\t- %s\n", tmp->name);
+		dprintf(client->fd, "\t- %s\r\n", tmp->name);
 		tmp = tmp->next;
 	}
 	return (SUCCESS);
@@ -132,10 +132,10 @@ int list_chan(t_env *e, t_client *client, const char *cmd)
 {
 	t_channel *tmp = e->channels;
 
-	dprintf(client->fd, " > Available channels:\n");
+	dprintf(client->fd, " > Available channels:\r\n");
 	while (tmp) {
 		if (strstr(tmp->name, &cmd[5]))
-			dprintf(client->fd, "\t- %s\n", tmp->name);
+			dprintf(client->fd, "\t- %s\r\n", tmp->name);
 		tmp = tmp->next;
 	}
 	return (SUCCESS);
@@ -147,7 +147,7 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 	t_channel *chan = client->channel;
 
 	if (strcmp(chan->name, &cmd[5]) != 0)
-		return (dprintf(client->fd, "You are not connected on this channel\n"), FAILURE);
+		return (dprintf(client->fd, "You are not connected on this channel\r\n"), FAILURE);
 	client->channel->nb_users -= 1;
 	if (client->channel->nb_users == 0)
 			delete_channel(e, client->channel);
@@ -168,11 +168,11 @@ int users_in_chan(t_env *e, t_client *client, const char *cmd)
 	t_client *tmp = e->clients;
 
 	if (!channel)
-		return (dprintf(client->fd, " > Channel '%s' does not exist\n", &cmd[6]), FAILURE);
-	dprintf(client->fd, " > Users connected on '%s' channel:\n", &cmd[6]);
+		return (dprintf(client->fd, " > Channel '%s' does not exist\r\n", &cmd[6]), FAILURE);
+	dprintf(client->fd, " > Users connected on '%s' channel:\r\n", &cmd[6]);
 	while (tmp) {
 		if (tmp->channel_id == channel->id)
-			dprintf(client->fd, "\t- %s\n", tmp->name);
+			dprintf(client->fd, "\t- %s\r\n", tmp->name);
 		tmp = tmp->next;
 	}
 	return (SUCCESS);
@@ -202,9 +202,9 @@ int private_msg(t_env *e, t_client *client, const char *cmd)
 	name = strndup(&cmd[8], i - 8);
 	dest = get_user_by_name(e, name);
 	if (!dest)
-		dprintf(client->fd, " > User '%s' does not exist\n", name);
+		dprintf(client->fd, " > User '%s' does not exist\r\n", name);
 	else {
-		asprintf(&msg, " -> from %s: %s\n", client->name, &cmd[i + 1]);
+		asprintf(&msg, " -> from %s: %s\r\n", client->name, &cmd[i + 1]);
 		dprintf(dest->fd, msg);
 		free(msg);
 	}
@@ -236,7 +236,7 @@ void server_message(t_env *e, int channel_id, const char *msg)
 		return;
 	while (tmp) {
 		if (tmp->channel_id == channel_id)
-			dprintf(tmp->fd, "%s\n", msg);
+			dprintf(tmp->fd, "%s\r\n", msg);
 		tmp = tmp->next;
 	}
 }
@@ -251,9 +251,9 @@ static int send_message(t_env *e, t_client *client, const char *msg)
 		if (tmp->channel_id == client->channel_id &&
 				tmp->fd != client->fd) {
 			if (strcmp(client->channel->chanop, client->name) == 0)
-				dprintf(tmp->fd, "@%s: %s\n", client->name, msg);
+				dprintf(tmp->fd, "@%s: %s\r\n", client->name, msg);
 			else
-				dprintf(tmp->fd, "%s: %s\n", client->name, msg);
+				dprintf(tmp->fd, "%s: %s\r\n", client->name, msg);
 		}
 		tmp = tmp->next;
 	}

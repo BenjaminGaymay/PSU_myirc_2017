@@ -12,9 +12,9 @@ int connect_to_server(t_env *e, const char *ip)
 {
 	e->fd = create_socket(e->port, inet_addr(&ip[8]), CLIENT, VERBOSE);
 	if (e->fd != FD_ERROR)
-		printf("Connected to %s\n", &ip[8]);
+		printf("Connected to %s\r\n", &ip[8]);
 	else
-		printf("Connection failed\n");
+		printf("Connection failed\r\n");
 	return (SUCCESS);
 }
 
@@ -25,6 +25,18 @@ static t_ptr_fct *get_cmd_ptr(void)
 	};
 
 	return (commands);
+}
+
+char *transform_cmd(char *cmd)
+{
+	int end_cmd = FAILURE;
+
+	for (int i = 0 ; cmd[i] ; i++) {
+		if (cmd[i] == ' ')
+			end_cmd = SUCCESS;
+		cmd[i] = (end_cmd == SUCCESS ? cmd[i + 1] : toupper(cmd[i + 1]));
+	}
+	return (cmd);
 }
 
 void exec_cmd(t_env *e, char *cmd)
@@ -41,6 +53,7 @@ void exec_cmd(t_env *e, char *cmd)
 			return;
 		}
 	}
+	dprintf(e->fd, "%s\r\n", transform_cmd(cmd));
 }
 
 void read_client(t_env *e)
@@ -54,7 +67,7 @@ void read_client(t_env *e)
 		if (buffer[0] == '/')
 			exec_cmd(e, buffer);
 		else if (e->fd != FD_ERROR)
-			dprintf(e->fd, "%s\n", buffer);
+			dprintf(e->fd, "%s\r\n", buffer);
 	}
 }
 
@@ -67,25 +80,23 @@ void receive_message(t_env *e)
 	size = read(e->fd, buffer, 4096);
 	if (size > 0) {
 		buffer[size - 1] = '\0';
-		tmp = strtok(buffer, "\n");
+		tmp = strtok(buffer, "\r\n");
 		while (tmp) {
-			printf("%s\n", tmp);
-			tmp = strtok(NULL, "\n");
+			printf("%s\r\n", tmp);
+			tmp = strtok(NULL, "\r\n");
 		}
 	} else {
 		close(e->fd);
 		e->fd = FD_ERROR;
-		printf("Connection closed (server timed out)\n");
+		printf("Connection closed (server timed out)\r\n");
 	}
 }
 
 void read_fd(t_env *e)
 {
-	static struct timeval tv;
+	struct timeval tv = {1, 0};
 	int fd_max = (e->fd != FD_ERROR ? e->fd : 0);
 
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
 	FD_SET(0, e->fd_read);
 	if (e->fd != FD_ERROR)
 		FD_SET(e->fd, e->fd_read);

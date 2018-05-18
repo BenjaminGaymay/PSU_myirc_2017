@@ -12,9 +12,9 @@ int connect_to_server(t_env *e, const char *ip)
 {
 	e->fd = create_socket(e->port, inet_addr(&ip[8]), CLIENT, VERBOSE);
 	if (e->fd != FD_ERROR)
-		printf("Connected to %s\r\n", &ip[8]);
+		printf(CONNECTED_TO, &ip[8]);
 	else
-		printf("Connection failed\r\n");
+		printf(CONNECTION_FAILED);
 	return (SUCCESS);
 }
 
@@ -89,7 +89,7 @@ void receive_message(t_env *e)
 	} else {
 		close(e->fd);
 		e->fd = FD_ERROR;
-		printf("Connection closed (server timed out)\r\n");
+		printf(CONNECT_CLOSE_TIMEOUT);
 	}
 }
 

@@ -20,3 +20,8 @@
 #define DELETE 2
 
 #define FCT_FAIL(name) fprintf(stderr, "Error: %s failed\n", name)
+
+#define CONNECT_CLOSE_TIMEOUT "Connection closed (server timed out)\r\n"
+#define CONNECTION_FAILED "Connection failed\r\n"
+#define CONNECTED_TO "Connected to %s\r\n"
+#define USER_MSG ":127.0.0.1 001 %s :Welcome to the IRC Network %s!USER1ARG@IPCLIENT\r\n"

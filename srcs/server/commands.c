@@ -113,7 +113,7 @@ int user(t_env *e, t_client *client, const char *cmd)
 {
 	(void)e;
 	(void)cmd;
-	dprintf(client->fd, ":127.0.0.1 001 %s :Welcome to the IRC Network %s!USER1ARG@IPCLIENT\r\n", client->name, client->name);
+	dprintf(client->fd, USER_MSG, client->name, client->name);
 	return (SUCCESS);
 }
 

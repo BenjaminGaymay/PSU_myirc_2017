@@ -60,7 +60,8 @@ int join(t_env *e, t_client *client, char *cmd)
 		if (client->channel->nb_users == 0)
 			delete_channel(e, client->channel);
 	}
-	channel = (find_channel(e, &cmd[5]) ? find_channel(e, &cmd[5]) : create_channel(e, client, &cmd[5]));
+	channel = (find_channel(e, &cmd[5]) ? find_channel(e, &cmd[5]) :
+		create_channel(e, client, &cmd[5]));
 	if (!channel)
 		return (FAILURE);
 	if (is_chanop(channel, client) == SUCCESS)
@@ -78,35 +79,40 @@ int join(t_env *e, t_client *client, char *cmd)
 /*
 ** Changer de pseudo
 */
-int  nick(t_env *e, t_client *client, char *cmd)
+int  nick(t_env *e, t_client *c, char *cmd)
 {
 	t_client *tmp = e->clients;
 	char *msg;
 
 	while (tmp) {
-		if (strcmp(tmp->name, &cmd[5]) == 0 && tmp->fd != client->fd)
-			return (dprintf(client->fd, "Nickname '%s' already used\r\n", &cmd[5]), FAILURE);
+		if (strcmp(tmp->name, &cmd[5]) == 0 && tmp->fd != c->fd)
+			return (dprintf(c->fd,
+			"Nickname '%s' already used\r\n", &cmd[5]), FAILURE);
 		tmp = tmp->next;
 	}
-	if (client->channel) {
-		if (is_chanop(client->channel, client) == SUCCESS)
-			asprintf(&msg, "@%s is now known as @%s", client->name, &cmd[5]);
+	if (c->channel) {
+		if (is_chanop(c->channel, c) == SUCCESS)
+			asprintf(&msg, "@%s is now known as @%s",
+				c->name, &cmd[5]);
 		else
-			asprintf(&msg, "%s is now known as %s", client->name, &cmd[5]);
-		server_message(e, client->channel->id, msg);
+			asprintf(&msg, "%s is now known as %s", c->name,
+				&cmd[5]);
+		server_message(e, c->channel->id, msg);
 		free(msg);
 	}
-	if  (client->channel && strcmp(client->channel->chanop, client->name) == 0) {
-		free(client->channel->chanop);
-		client->channel->chanop = strdup(&cmd[5]);
+	if  (c->channel && strcmp(c->channel->chanop, c->name) == 0) {
+		free(c->channel->chanop);
+		c->channel->chanop = strdup(&cmd[5]);
 	}
-	free(client->name);
-	client->name = strdup(&cmd[5]);
+	free(c->name);
+	c->name = strdup(&cmd[5]);
 	return (SUCCESS);
 }
 
 int user(t_env *e, t_client *client, const char *cmd)
 {
+	(void)e;
+	(void)cmd;
 	dprintf(client->fd, ":127.0.0.1 001 %s :Welcome to the IRC Network %s!USER1ARG@IPCLIENT\r\n", client->name, client->name);
 	return (SUCCESS);
 }
@@ -148,7 +154,9 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 	t_channel *chan = client->channel;
 
 	if (strcmp(chan->name, &cmd[5]) != 0)
-		return (dprintf(client->fd, "You are not connected on this channel\r\n"), FAILURE);
+		return (dprintf(client->fd,
+			"You are not connected on this channel\r\n"),
+			FAILURE);
 	client->channel->nb_users -= 1;
 	if (client->channel->nb_users == 0)
 			delete_channel(e, client->channel);
@@ -166,16 +174,15 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 int users_in_chan(t_env *e, t_client *client, const char *cmd)
 {
 	t_channel *channel = find_channel(e, &cmd[6]);
-	t_client *tmp = e->clients;
 
 	if (!channel)
-		return (dprintf(client->fd, " > Channel '%s' does not exist\r\n", &cmd[6]), FAILURE);
-	dprintf(client->fd, " > Users connected on '%s' channel:\r\n", &cmd[6]);
-	while (tmp) {
+		return (dprintf(client->fd,
+		" > Channel '%s' does not exist\r\n", &cmd[6]), FAILURE);
+	dprintf(client->fd, " > Users connected on '%s' channel:\r\n",
+		&cmd[6]);
+	for (t_client *tmp = e->clients; tmp; tmp = tmp->next)
 		if (tmp->channel_id == channel->id)
 			dprintf(client->fd, "\t- %s\r\n", tmp->name);
-		tmp = tmp->next;
-	}
 	return (SUCCESS);
 }
 
@@ -191,7 +198,7 @@ t_client *get_user_by_name(t_env *e, const char *name)
 	return (NULL);
 }
 
-int private_msg(t_env *e, t_client *client, const char *cmd)
+int private_msg(t_env *e, t_client *c, const char *cmd)
 {
 	int i = 8;
 	char *name;
@@ -203,9 +210,9 @@ int private_msg(t_env *e, t_client *client, const char *cmd)
 	name = strndup(&cmd[8], i - 8);
 	dest = get_user_by_name(e, name);
 	if (!dest)
-		dprintf(client->fd, " > User '%s' does not exist\r\n", name);
+		dprintf(c->fd, " > User '%s' does not exist\r\n", name);
 	else {
-		asprintf(&msg, " -> from %s: %s\r\n", client->name, &cmd[i + 1]);
+		asprintf(&msg, " -> from %s: %s\r\n", c->name, &cmd[i + 1]);
 		dprintf(dest->fd, msg);
 		free(msg);
 	}
@@ -270,14 +277,17 @@ static int send_message(t_env *e, t_client *client, const char *msg)
 	t_client *tmp = e->clients;
 
 	if (!client->channel)
-		return (dprintf(client->fd, "You must join a channel.\n"), FAILURE);
+		return (dprintf(client->fd, "You must join a channel.\n"),
+			FAILURE);
 	while (tmp) {
 		if (tmp->channel_id == client->channel_id &&
 				tmp->fd != client->fd) {
 			if (strcmp(client->channel->chanop, client->name) == 0)
-				dprintf(tmp->fd, "@%s: %s\r\n", client->name, msg);
+				dprintf(tmp->fd, "@%s: %s\r\n",
+					client->name, msg);
 			else
-				dprintf(tmp->fd, "%s: %s\r\n", client->name, msg);
+				dprintf(tmp->fd, "%s: %s\r\n",
+					client->name, msg);
 		}
 		tmp = tmp->next;
 	}

@@ -54,7 +54,8 @@ int create_socket(const int port, const in_addr_t addr,
 	if (! pe)
 		return (FCT_FAIL("getprotobyname"), FD_ERROR);
 	fd = socket(PF_INET, SOCK_STREAM, pe->p_proto);
-	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+	if (setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &(int){1},
+		sizeof(int)) < 0)
 		return (FCT_FAIL("setsockopt"), FD_ERROR);
 	if (fd == -1)
 		return (FCT_FAIL("socket"), FD_ERROR);

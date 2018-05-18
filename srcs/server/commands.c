@@ -111,6 +111,7 @@ int  nick(t_env *e, t_client *c, char *cmd)
 
 int user(t_env *e, t_client *client)
 {
+	(void)e;
 	dprintf(client->fd, "OK: qsdqsd\n");
 	return (SUCCESS);
 }
@@ -172,18 +173,15 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 int users_in_chan(t_env *e, t_client *client, const char *cmd)
 {
 	t_channel *channel = find_channel(e, &cmd[6]);
-	t_client *tmp = e->clients;
 
 	if (!channel)
 		return (dprintf(client->fd,
 		" > Channel '%s' does not exist\r\n", &cmd[6]), FAILURE);
 	dprintf(client->fd, " > Users connected on '%s' channel:\r\n",
 		&cmd[6]);
-	while (tmp) {
+	for (t_client *tmp = e->clients; tmp; tmp = tmp->next)
 		if (tmp->channel_id == channel->id)
 			dprintf(client->fd, "\t- %s\r\n", tmp->name);
-		tmp = tmp->next;
-	}
 	return (SUCCESS);
 }
 

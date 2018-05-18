@@ -27,7 +27,7 @@ int read_on_client(t_env *e, t_client *client)
 			tmp = strtok(NULL, "\n");
 		}
 	}
-	 else
+	else
 		return (delete_client(e, client));
 	return (SUCCESS);
 }
@@ -47,7 +47,8 @@ int add_client(t_env *e)
 	client_sin_len = sizeof(client_sin);
 	asprintf(&(new->name), "anonymous%d", id);
 	new->id = id++;
-	new->fd = accept(e->server, (struct sockaddr *)&client_sin, &client_sin_len);
+	new->fd = accept(e->server, (struct sockaddr *)&client_sin,
+		&client_sin_len);
 	new->channel_id = NONE;
 	new->next = e->clients;
 	new->channel = NULL;
@@ -83,7 +84,8 @@ int read_all_fd(t_env *e)
 	tmp = e->clients;
 	while (tmp) {
 		if (FD_ISSET(tmp->fd, e->fd_read))
-			tmp = (read_on_client(e, tmp) == DELETE ? e->clients : tmp->next);
+			tmp = (read_on_client(e, tmp) == DELETE ?
+				e->clients : tmp->next);
 		else
 			tmp = tmp->next;
 	}

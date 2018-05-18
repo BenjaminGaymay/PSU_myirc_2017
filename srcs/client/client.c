@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2018
-**PSU_myirc_2017
+** PSU_myirc_2017
 ** File description:
 ** client
 */
@@ -34,7 +34,8 @@ char *transform_cmd(char *cmd)
 	for (int i = 0 ; cmd[i] ; i++) {
 		if (cmd[i] == ' ')
 			end_cmd = SUCCESS;
-		cmd[i] = (end_cmd == SUCCESS ? cmd[i + 1] : toupper(cmd[i + 1]));
+		cmd[i] = (end_cmd == SUCCESS ? cmd[i + 1] :
+			toupper(cmd[i + 1]));
 	}
 	return (cmd);
 }

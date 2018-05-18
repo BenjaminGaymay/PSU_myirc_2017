@@ -105,8 +105,9 @@ int  nick(t_env *e, t_client *client, char *cmd)
 	return (SUCCESS);
 }
 
-int user(void)
+int user(t_env *e, t_client *client)
 {
+	dprintf(client->fd, "OK: qsdqsd\n");
 	return (SUCCESS);
 }
 
@@ -212,6 +213,28 @@ int private_msg(t_env *e, t_client *client, const char *cmd)
 	return (SUCCESS);
 }
 
+int quit(t_env *e, t_client *client)
+{
+	char *msg;
+	t_channel *chan = client->channel;
+
+	if (chan) {
+		client->channel->nb_users -= 1;
+		if (client->channel->nb_users == 0)
+				delete_channel(e, client->channel);
+		if (is_chanop(chan, client) == SUCCESS)
+			asprintf(&msg, "* @%s has disconnected", client->name);
+		else
+			asprintf(&msg, "* %s has disconnected", client->name);
+		client->channel = NULL;
+		client->channel_id = NONE;
+		server_message(e, chan->id, msg);
+		free(msg);
+	}
+	delete_client(e, client);
+	return (SUCCESS);
+}
+
 static t_ptr_fct *get_cmd_ptr(void)
 {
 	static t_ptr_fct commands[] = {
@@ -222,7 +245,8 @@ static t_ptr_fct *get_cmd_ptr(void)
 		{"LIST", list_chan},
 		{"PART ", leave_chan},
 		{"NAMES ", users_in_chan},
-		{"PRIVMSG ", private_msg}
+		{"PRIVMSG ", private_msg},
+		{"QUIT", quit}
 	};
 
 	return (commands);
@@ -267,7 +291,7 @@ int exec_client_command(t_env *e, t_client *client, char *cmd)
 
 	// Faut mettre ton truc pour strcmp
 	// la si tu fais un /listqsdqsd au lieu de /list ca marche =)))
-	for (int i = 0 ; i < 8 ; i++) {
+	for (int i = 0 ; i < 9 ; i++) {
 		tmp = commands[i];
 		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
 		//faire commande quit (avec message toussa toussa)

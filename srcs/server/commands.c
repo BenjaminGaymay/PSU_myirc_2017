@@ -105,9 +105,9 @@ int  nick(t_env *e, t_client *client, char *cmd)
 	return (SUCCESS);
 }
 
-int user(t_env *e, t_client *client)
+int user(t_env *e, t_client *client, const char *cmd)
 {
-	dprintf(client->fd, "OK: qsdqsd\n");
+	dprintf(client->fd, ":127.0.0.1 001 %s :Welcome to the IRC Network %s!USER1ARG@IPCLIENT\r\n", client->name, client->name);
 	return (SUCCESS);
 }
 

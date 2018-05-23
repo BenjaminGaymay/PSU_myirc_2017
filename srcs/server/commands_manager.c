@@ -31,6 +31,9 @@ int exec_client_command(t_env *e, t_client *client, char *cmd)
 	t_ptr_fct *commands = get_cmd_ptr();
 	t_ptr_fct tmp;
 
+	if (cmd[strlen(cmd) - 1] == '\r')
+		cmd[strlen(cmd) - 1] = '\0';
+	printf("CMD: %s\n", cmd);
 	for (int i = 0 ; i < 9 ; i++) {
 		tmp = commands[i];
 		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)

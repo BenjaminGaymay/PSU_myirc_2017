@@ -45,7 +45,7 @@ int add_client(t_env *e)
 	if (!new)
 		return (FCT_FAIL("malloc"), ERROR);
 	client_sin_len = sizeof(client_sin);
-	asprintf(&(new->name), "anonymous%d", id);
+	new->name = calloc(1, sizeof(char));
 	new->id = id++;
 	new->fd = accept(e->server, (struct sockaddr *)&client_sin,
 		&client_sin_len);

@@ -32,15 +32,12 @@ int join(t_env *e, t_client *client, char *cmd)
 		create_channel(e, client, &cmd[5]));
 	if (!channel)
 		return (FAILURE);
-	if (is_chanop(channel, client) == SUCCESS)
-		asprintf(&msg, "* @%s has joined", client->name);
-	else
-		asprintf(&msg, "* %s has joined", client->name);
-	server_message(e, channel->id, msg);
-	free(msg);
+	asprintf(&msg, ":%s JOIN :%s", client->name, &cmd[5]);
 	channel->nb_users += 1;
 	client->channel = channel;
 	client->channel_id = channel->id;
+	server_message(e, channel->id, msg);
+	free(msg);
 	return (SUCCESS);
 }
 
@@ -58,13 +55,10 @@ int nick(t_env *e, t_client *c, char *cmd)
 			"Nickname '%s' already used\r\n", &cmd[5]), FAILURE);
 		tmp = tmp->next;
 	}
+	if (strlen(c->name) > 0)
+		dprintf(c->fd, ":%s NICK %s\r\n", c->name, &cmd[5]);
 	if (c->channel) {
-		if (is_chanop(c->channel, c) == SUCCESS)
-			asprintf(&msg, "@%s is now known as @%s",
-				c->name, &cmd[5]);
-		else
-			asprintf(&msg, "%s is now known as %s", c->name,
-				&cmd[5]);
+		asprintf(&msg, ":%s NICK %s", c->name, &cmd[5]);
 		server_message(e, c->channel->id, msg);
 		free(msg);
 	}

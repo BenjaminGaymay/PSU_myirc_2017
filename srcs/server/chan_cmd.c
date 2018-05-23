@@ -35,14 +35,11 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 			FAILURE);
 	client->channel->nb_users -= 1;
 	if (client->channel->nb_users == 0)
-			delete_channel(e, client->channel);
-	if (is_chanop(chan, client) == SUCCESS)
-		asprintf(&msg, "* @%s has disconnected", client->name);
-	else
-		asprintf(&msg, "* %s has disconnected", client->name);
+		delete_channel(e, client->channel);
+	asprintf(&msg, ":%s PART %s", client->name, &cmd[5]);
+	server_message(e, chan->id, msg);
 	client->channel = NULL;
 	client->channel_id = NONE;
-	server_message(e, chan->id, msg);
 	free(msg);
 	return (SUCCESS);
 }

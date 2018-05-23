@@ -28,13 +28,21 @@ static int init_server(t_env *e, const char *argv[])
 	return (SUCCESS);
 }
 
+static void usage(const char *prog)
+{
+	printf("USAGE\n\t%s\tport\n\nDESCRIPTION"
+		"\n\tport\tport of the server\n", prog);
+}
+
 int main(const int argc, const char *argv[])
 {
 	fd_set fd_read;
 	t_env e = {NULL, NULL, &fd_read, -1, -1};
 
 	if (argc != 2)
-		return (ERROR);
+		return (usage(argv[0]), ERROR);
+	if (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)
+		return (usage(argv[0]), SUCCESS);
 	if (init_server(&e, argv) == FD_ERROR)
 		return (ERROR);
 	server_loop(&e);

@@ -17,3 +17,7 @@ typedef struct s_env
 	int port;
 	int fd;
 } t_env;
+
+void client_loop(void);
+void exec_cmd(t_env *, char *);
+int connect_to_server(t_env *, const char *);

@@ -48,3 +48,12 @@ int exec_client_command(t_env *, t_client *, char *);
 
 int delete_client(t_env *, t_client *);
 void delete_channel(t_env *, t_channel *);
+
+t_channel *find_channel(t_env *, const char *);
+t_channel *create_channel(t_env *, t_client *, const char *);
+
+int send_message(t_env *, t_client *, const char *);
+int is_chanop(t_channel *, t_client *);
+int continue_loop(int, int );
+void set_fd(t_env *);
+void init_sigint_catch(void);

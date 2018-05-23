@@ -15,12 +15,19 @@ RM	= rm -f
 SRCS_SHARED	= ./srcs/shared/basics.c	\
 		  ./srcs/shared/socket.c
 
-SRCS_CLIENT	= ./srcs/client/client.c
+SRCS_CLIENT	= ./srcs/client/client.c	\
+		  ./srcs/client/main.c		\
+		  ./srcs/client/commands.c
 
-SRCS_SERVER	= ./srcs/server/server.c	\
-		  ./srcs/server/commands.c	\
-		  ./srcs/server/fd.c		\
-		  ./srcs/server/manage_lists.c
+SRCS_SERVER	= ./srcs/server/server.c		\
+		  ./srcs/server/commands.c		\
+		  ./srcs/server/fd.c			\
+		  ./srcs/server/manage_lists.c		\
+		  ./srcs/server/channel.c		\
+		  ./srcs/server/commands_manager.c	\
+		  ./srcs/server/user_cmd.c		\
+		  ./srcs/server/chan_cmd.c		\
+		  ./srcs/server/main.c
 
 OBJS_SHARED	= $(SRCS_SHARED:.c=.o)
 OBJS_CLIENT	= $(SRCS_CLIENT:.c=.o)

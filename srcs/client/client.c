@@ -45,8 +45,6 @@ void exec_cmd(t_env *e, char *cmd)
 	t_ptr_fct *commands = get_cmd_ptr();
 	t_ptr_fct tmp;
 
-	// Faut mettre ton truc pour strcmp
-	// la si tu fais un /listqsdqsd au lieu de /list ca marche =)))
 	for (int i = 0 ; i < 1 ; i++) {
 		tmp = commands[i];
 		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS) {

@@ -56,7 +56,6 @@ static int server_loop(t_env *e)
 
 static int init_server(t_env *e, const char *argv[])
 {
-	// verifier argv1
 	init_sigint_catch();
 	e->port = atoi(argv[1]);
 	e->server = create_socket(e->port, INADDR_ANY, SERVER, VERBOSE);

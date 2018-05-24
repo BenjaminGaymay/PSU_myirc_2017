@@ -39,6 +39,5 @@ int exec_client_command(t_env *e, t_client *client, char *cmd)
 		if (strncmp(cmd, tmp.name, strlen(tmp.name)) == SUCCESS)
 			return (tmp.cmd(e, client, cmd));
 	}
-	send_message(e, client, cmd);
 	return (SUCCESS);
 }

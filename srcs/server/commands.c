@@ -25,19 +25,22 @@ int private_msg(t_env *e, t_client *c, const char *cmd)
 	int i = 8;
 	char *name;
 	char *msg;
-	t_client *dest;
+	t_client *cli_dest;
+	t_channel *chan_dest;
 
 	while (cmd[i] && cmd[i] != ' ')
 		i += 1;
 	name = strndup(&cmd[8], i - 8);
-	dest = get_user_by_name(e, name);
-	if (!dest)
-		dprintf(c->fd, " > User '%s' does not exist\r\n", name);
-	else {
-		asprintf(&msg, " -> from %s: %s\r\n", c->name, &cmd[i + 1]);
-		dprintf(dest->fd, msg);
-		free(msg);
-	}
+	chan_dest = find_channel(e, name);
+	asprintf(&msg, ":%s PRIVMSG %s %s", c->name, name, &cmd[i + 1]);
+	printf("privmsg: '%s'\r\n", msg);
+	if (!chan_dest) {
+		cli_dest = get_user_by_name(e, name);
+		if (cli_dest)
+			dprintf(cli_dest->fd, "%s\r\n", msg);
+	} else
+		server_message(e, chan_dest->id, msg);
+	free(msg);
 	free(name);
 	return (SUCCESS);
 }

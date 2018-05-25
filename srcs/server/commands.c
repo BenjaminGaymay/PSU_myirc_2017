@@ -40,9 +40,7 @@ int private_msg(t_env *e, t_client *c, const char *cmd)
 			dprintf(cli_dest->fd, "%s\r\n", msg);
 	} else
 		server_message(e, chan_dest->id, msg);
-	free(msg);
-	free(name);
-	return (SUCCESS);
+	return (free(msg), free(name), SUCCESS);
 }
 
 int quit(t_env *e, t_client *client)

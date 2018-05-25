@@ -66,9 +66,7 @@ int nick(t_env *e, t_client *c, char *cmd)
 		free(c->channel->chanop);
 		c->channel->chanop = strdup(&cmd[5]);
 	}
-	free(c->name);
-	c->name = strdup(&cmd[5]);
-	return (SUCCESS);
+	return (free(c->name), c->name = strdup(&cmd[5]), SUCCESS);
 }
 
 int user(t_env *e, t_client *client, const char *cmd)

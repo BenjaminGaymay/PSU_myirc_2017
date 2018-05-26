@@ -16,7 +16,7 @@ static void usage(const char *prog)
 int main(int ac, char **av)
 {
 	(void)ac;
-	if (strcmp(av[1], "-h") == 0 || strcmp(av[1], "--help") == 0)
+	if (av[1] && (strcmp(av[1], "-h") == 0 || strcmp(av[1], "--help") == 0))
 		return (usage(av[0]), SUCCESS);
 	client_loop();
 	return (SUCCESS);

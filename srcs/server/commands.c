@@ -87,14 +87,8 @@ int send_message(t_env *e, t_client *client, const char *msg)
 			FAILURE);
 	while (tmp) {
 		if (tmp->channel_id == client->channel_id &&
-				tmp->fd != client->fd) {
-			if (strcmp(client->channel->chanop, client->name) == 0)
-				dprintf(tmp->fd, "@%s: %s\r\n",
-					client->name, msg);
-			else
-				dprintf(tmp->fd, "%s: %s\r\n",
-					client->name, msg);
-		}
+				tmp->fd != client->fd)
+			print_chanop(tmp, client, msg);
 		tmp = tmp->next;
 	}
 	return (SUCCESS);

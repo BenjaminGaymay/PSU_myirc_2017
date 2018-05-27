@@ -39,3 +39,11 @@ t_channel *create_channel(t_env *e, t_client *client, const char *chan_name)
 	e->channels = new;
 	return (new);
 }
+
+void print_chanop(t_client *tmp, t_client *client, const char *msg)
+{
+	if (strcmp(client->channel->chanop, client->name) == 0)
+		dprintf(tmp->fd, "@%s: %s\r\n",	client->name, msg);
+	else
+		dprintf(tmp->fd, "%s: %s\r\n", client->name, msg);
+}

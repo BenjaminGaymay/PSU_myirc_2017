@@ -57,3 +57,4 @@ int is_chanop(t_channel *, t_client *);
 int continue_loop(int, int );
 void set_fd(t_env *);
 void init_sigint_catch(void);
+void print_chanop(t_client *, t_client *, const char *);

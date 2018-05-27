@@ -29,9 +29,10 @@ int leave_chan(t_env *e, t_client *client, const char *cmd)
 	char *msg;
 	t_channel *chan = client->channel;
 
+	if (strlen(&cmd[5]) == 0)
+		return (dprintf(client->fd, NOPARAM), FAILURE);
 	if (strcmp(chan->name, &cmd[5]) != 0)
-		return (dprintf(client->fd,
-			"You are not connected on this channel\r\n"),
+		return (dprintf(client->fd, NOTONCHAN, &cmd[5]),
 			FAILURE);
 	client->channel->nb_users -= 1;
 	if (client->channel->nb_users == 0)

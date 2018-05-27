@@ -37,5 +37,6 @@ t_channel *create_channel(t_env *e, t_client *client, const char *chan_name)
 	new->nb_users = 0;
 	new->next = e->channels;
 	e->channels = new;
+	dprintf(client->fd, ":127.0.0.1 331 RPL_NOTOPIC %s :\r\n", chan_name);
 	return (new);
 }

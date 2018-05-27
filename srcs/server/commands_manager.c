@@ -12,12 +12,12 @@
 static t_ptr_fct *get_cmd_ptr(void)
 {
 	static t_ptr_fct commands[] = {
-		{"NICK ", nick},
+		{"NICK", nick},
 		{"USER ", user},
-		{"JOIN ", join},
+		{"JOIN", join},
 		{"USERS", show_users},
 		{"LIST", list_chan},
-		{"PART ", leave_chan},
+		{"PART", leave_chan},
 		{"NAMES ", users_in_chan},
 		{"PRIVMSG ", private_msg},
 		{"QUIT", quit}

@@ -25,3 +25,9 @@
 #define CONNECTION_FAILED "Connection failed\r\n"
 #define CONNECTED_TO "Connected to %s\r\n"
 #define USER_MSG ":127.0.0.1 001 %s :Welcome to the IRC Network %s\r\n"
+#define NICKUSE ":127.0.0.1 433 ERR_NICKNAMEINUSE :%s is already in use\r\n"
+#define NONICK ":127.0.0.1 433 ERR_NONICKNAME :No nickname given\r\n"
+#define NOPARAM ":127.0.0.1 461 ERR_NEEDMOREPARAMS PART"/*
+*/" :Not enough parameters\r\n"
+#define NOTONCHAN ":127.0.0.1 442 ERR_NOTONCHANNEL %s :"/*
+*/"You're not on that channel\r\n"

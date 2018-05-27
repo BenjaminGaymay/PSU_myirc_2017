@@ -23,6 +23,8 @@ int join(t_env *e, t_client *client, char *cmd)
 	t_channel *channel;
 	char *msg;
 
+	if (strlen(&cmd[5]) == 0)
+		return (dprintf(client->fd, NOPARAM), FAILURE);
 	if (client->channel) {
 		client->channel->nb_users -= 1;
 		if (client->channel->nb_users == 0)
@@ -37,8 +39,7 @@ int join(t_env *e, t_client *client, char *cmd)
 	client->channel = channel;
 	client->channel_id = channel->id;
 	server_message(e, channel->id, msg);
-	free(msg);
-	return (SUCCESS);
+	return (free(msg), SUCCESS);
 }
 
 /*
@@ -49,14 +50,14 @@ int nick(t_env *e, t_client *c, char *cmd)
 	t_client *tmp = e->clients;
 	char *msg;
 
+	if (strlen(&cmd[5]) == 0)
+		return (dprintf(c->fd, NONICK), FAILURE);
 	while (tmp) {
 		if (strcmp(tmp->name, &cmd[5]) == 0 && tmp->fd != c->fd)
-			return (dprintf(c->fd,
-			"Nickname '%s' already used\r\n", &cmd[5]), FAILURE);
+			return (dprintf(c->fd, NICKUSE, &cmd[5]), FAILURE);
 		tmp = tmp->next;
 	}
-	if (strlen(c->name) > 0)
-		dprintf(c->fd, ":%s NICK %s\r\n", c->name, &cmd[5]);
+	dprintf(c->fd, ":%s NICK %s\r\n", c->name, &cmd[5]);
 	if (c->channel) {
 		asprintf(&msg, ":%s NICK %s", c->name, &cmd[5]);
 		server_message(e, c->channel->id, msg);
